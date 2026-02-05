@@ -1,3 +1,8 @@
+variable "aws_key_pair" {
+  default = "~/aws/aws_keys/default-ec2.pem"
+}
+
+
 terraform {
   required_providers {
     aws = {
@@ -56,4 +61,28 @@ resource "aws_instance" "http_server" {
   instance_type          = "t4g.small"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
   subnet_id              = "subnet-0ac7df6fd1109a98b"
+
+  # Ensure the instance gets a public IP to allow SSH/HTTP access
+  associate_public_ip_address = true
+
+
+  ## Add html file using ssh connection
+  connection {
+    type        = "ssh"
+    host        = self.public_ip
+    user        = "ec2-user"
+    private_key = file(var.aws_key_pair) # Fixed: Reads the file content
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      // install httpd
+      "sudo yum install httpd -y",
+      // start http server
+      "sudo service httpd start",
+      // copy file
+      "echo Welcom to my Ec2 server - virtual server it at ${self.public_ip} | sudo tee /var/www/html/index.html"
+    ]
+  }
+
 }
