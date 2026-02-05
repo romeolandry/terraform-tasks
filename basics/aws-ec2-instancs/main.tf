@@ -48,3 +48,12 @@ resource "aws_security_group" "http_server_sg" {
     Name = "http-server-sg"
   }
 }
+
+## Aws Ec2 Instanz
+resource "aws_instance" "http_server" {
+  ami                    = "ami-035f2391d0ece4c71" ## Operating system
+  key_name               = "default-ec2"
+  instance_type          = "t4g.small"
+  vpc_security_group_ids = [aws_security_group.http_server_sg.id]
+  subnet_id              = "subnet-0ac7df6fd1109a98b"
+}
