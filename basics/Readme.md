@@ -1,7 +1,7 @@
 # terraform task
 
 
-## Terrafom commands
+## Terrafom commands more [hier](https://developer.hashicorp.com/terraform/cli/run)
 
 ``` sh
 
@@ -16,3 +16,11 @@ Apply configuartio
     terraform apply # apply configuration
     terraform appy "[filePlanName]" apply configuration from result of a plan
 ```
+
+Delete resource
+
+```sh
+    terraform destroy
+```
+
+Validate Terraform file use `terraform validate`. Terraform can also update format of your file `terrafom fmt`.
