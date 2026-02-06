@@ -9,13 +9,13 @@ terraform {
 }
 
 provider "aws" {
-  region = "us-east-1"
+  region = "eu-central-1"
 }
 
 // S3 bucket
 # 1. The S3 Bucket
 resource "aws_s3_bucket" "my_backend_state_bucket" {
-  bucket = "my_backend_state_bucket_2026"
+  bucket = "kcrl-two-test-my-unique-terraform-state-2026"
 
   lifecycle {
     prevent_destroy = true

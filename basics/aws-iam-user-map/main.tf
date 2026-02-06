@@ -20,7 +20,7 @@ terraform {
 }
 
 provider "aws" {
-    region ="us-east-1"
+    region ="eu-central-1"
 }
 
 resource "aws_iam_user" "my_tf_iam_user" {
