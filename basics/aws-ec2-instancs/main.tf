@@ -2,6 +2,13 @@ variable "aws_key_pair" {
   default = "~/aws/aws_keys/default-ec2.pem"
 }
 
+variable "default_ec2_pub_key" {
+  default = "change Me !"
+}
+
+variable "instance_key_name" {
+  default = "default-ec2"
+}
 
 terraform {
   required_providers {
@@ -36,8 +43,12 @@ data "aws_subnets" "default_subnets" {
   }
 }
 
-## AMI Dataprovider: data.aws_ami.aws_linux_2_latest
+## data provider instance type: data.aws_ec2_instance_type.ec2_instance_type
+data "aws_ec2_instance_type" "ec2_instance_type" {
+  instance_type = "t4g.small"
+}
 
+## AMI Dataprovider: data.aws_ami.aws_linux_2_latest
 data "aws_ami" "aws_linux_2_latest" {
   most_recent = true
   owners      = ["amazon"]
@@ -50,6 +61,11 @@ data "aws_ami" "aws_linux_2_latest" {
 
 }
 
+## Key pai resource: aws_key_pair.default_ec2
+# resource "aws_key_pair" "default_ec2" {
+#   key_name = "default-ec2"
+#   public_key = var.default_ec2_pub_key
+# }
 
 resource "aws_security_group" "http_server_sg" {
   name        = "http_server_sg"
@@ -90,8 +106,8 @@ resource "aws_security_group" "http_server_sg" {
 resource "aws_instance" "http_server" {
   # ami                    = "ami-035f2391d0ece4c71" ## Operating system
   ami                    = data.aws_ami.aws_linux_2_latest.id # data provider data.aws_ami.aws_linux_2_latest
-  key_name               = "default-ec2"
-  instance_type          = "t4g.small"
+  key_name               = var.instance_key_name              # "default-ec2"
+  instance_type          = data.aws_ec2_instance_type.ec2_instance_type.id
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
   ## subnet_id              = "subnet-0ac7df6fd1109a98b"
   subnet_id = data.aws_subnets.default_subnets.ids[0]
