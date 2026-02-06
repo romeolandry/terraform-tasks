@@ -24,3 +24,11 @@ Delete resource
 ```
 
 Validate Terraform file use `terraform validate`. Terraform can also update format of your file `terrafom fmt`.
+
+## Multiple Environments with Workspace
+
+```sh
+    terraform workspace
+```
+
+To manage workspaces in terraform.

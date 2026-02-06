@@ -18,7 +18,7 @@ resource "aws_s3_bucket" "my_backend_state_bucket" {
   bucket = "kcrl-two-test-my-unique-terraform-state-2026"
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }
 
