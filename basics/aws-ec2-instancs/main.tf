@@ -20,10 +20,18 @@ provider "aws" {
 # HTTP Server -> SG (Security groupe)
 # SG -> 80 TCP, 22 TCP (ssh), CIRD["0.0.0.0/0"] ->allow incomming request from all server(Ip-Address)
 
+# *** get default vpc from aws: terraform don't create or destroy it.
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name ="Default VPC"
+  }
+}
+
 resource "aws_security_group" "http_server_sg" {
   name        = "http_server_sg"
   description = "Allow HTTP and SSH traffic"
-  vpc_id      = "vpc-0c4051638ff8890d8"
+  # vpc_id      = "vpc-0c4051638ff8890d8"
+  vpc_id      = aws_default_vpc.default.id ## use id from resource
 
   # HTTP access from anywhere
   ingress {
