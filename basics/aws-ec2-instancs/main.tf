@@ -23,15 +23,27 @@ provider "aws" {
 # *** get default vpc from aws: terraform don't create or destroy it.
 resource "aws_default_vpc" "default" {
   tags = {
-    Name ="Default VPC"
+    Name = "Default VPC"
   }
 }
+
+## data provider for subnets: data.aws_subnets.default_subnets
+
+data "aws_subnets" "default_subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [aws_default_vpc.default.id]
+  }
+}
+
+
+
 
 resource "aws_security_group" "http_server_sg" {
   name        = "http_server_sg"
   description = "Allow HTTP and SSH traffic"
   # vpc_id      = "vpc-0c4051638ff8890d8"
-  vpc_id      = aws_default_vpc.default.id ## use id from resource
+  vpc_id = aws_default_vpc.default.id ## use id from resource
 
   # HTTP access from anywhere
   ingress {
@@ -68,7 +80,8 @@ resource "aws_instance" "http_server" {
   key_name               = "default-ec2"
   instance_type          = "t4g.small"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
-  subnet_id              = "subnet-0ac7df6fd1109a98b"
+  ## subnet_id              = "subnet-0ac7df6fd1109a98b"
+  subnet_id = data.aws_subnets.default_subnets.ids[0]
 
   # Ensure the instance gets a public IP to allow SSH/HTTP access
   associate_public_ip_address = true
