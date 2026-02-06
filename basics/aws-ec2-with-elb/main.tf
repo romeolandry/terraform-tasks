@@ -96,3 +96,45 @@ resource "aws_instance" "http_servers" {
   }
 
 }
+
+## loadbalancer SG
+resource "aws_security_group" "elb_sg" {
+  name        = "elb_sg"
+  description = "Lodbalancer Security group"
+  vpc_id      = aws_default_vpc.default.id ## use id from resource
+
+  # HTTP access from anywhere
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Outbound rules: Allow all traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # Using "-1" as a string is the standard for "all"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "http-elb-sg"
+  }
+}
+
+resource "aws_elb" "elb" {
+
+  name            = "elb"
+  subnets         = data.aws_subnets.default_subnets.ids
+  security_groups = [aws_security_group.elb_sg.id]
+  instances       = values(aws_instance.http_servers).*.id
+  listener {
+
+    instance_port     = 80
+    instance_protocol = "http"
+    lb_port           = 80
+    lb_protocol       = "http"
+  }
+}
