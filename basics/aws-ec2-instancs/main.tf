@@ -36,7 +36,19 @@ data "aws_subnets" "default_subnets" {
   }
 }
 
+## AMI Dataprovider: data.aws_ami.aws_linux_2_latest
 
+data "aws_ami" "aws_linux_2_latest" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name = "name"
+    ## values = ["al2023-ami-2023.10.20260120.4-kernel-6.1-arm64"]
+    values = ["al2023-ami-2023.10.20260120.4-kernel-6.1-arm64"]
+  }
+
+}
 
 
 resource "aws_security_group" "http_server_sg" {
@@ -76,7 +88,8 @@ resource "aws_security_group" "http_server_sg" {
 
 ## Aws Ec2 Instanz
 resource "aws_instance" "http_server" {
-  ami                    = "ami-035f2391d0ece4c71" ## Operating system
+  # ami                    = "ami-035f2391d0ece4c71" ## Operating system
+  ami                    = data.aws_ami.aws_linux_2_latest.id # data provider data.aws_ami.aws_linux_2_latest
   key_name               = "default-ec2"
   instance_type          = "t4g.small"
   vpc_security_group_ids = [aws_security_group.http_server_sg.id]
